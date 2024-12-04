@@ -1,3 +1,4 @@
+using System.Collections;
 using TimesheetSystem.Domain.Entities;
 
 namespace TimesheetSystem.Domain.Aggregates;
@@ -33,4 +34,10 @@ public class TimeSheet
             .Where(e => e.UserName == userName && e.Date == date.Date)
             .Sum(e => e.HoursWorked.HoursWorked);
     }
+
+    public IEnumerable<TimesheetEntry> GetAllEntries()
+    {
+        return _entries.AsReadOnly(); 
+    }
+
 }
