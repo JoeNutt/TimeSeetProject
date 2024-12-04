@@ -1,0 +1,6 @@
+@TimesheetSystem.Presentation_HostAddress = http://localhost:5020
+
+GET {{TimesheetSystem.Presentation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
