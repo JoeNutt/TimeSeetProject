@@ -1,3 +1,5 @@
+using TimesheetSystem.Domain.ValueObjects;
+
 namespace TimesheetSystem.UnitTests
 {
     using TimesheetSystem.Domain.Aggregates;
@@ -53,6 +55,23 @@ namespace TimesheetSystem.UnitTests
             Assert.Throws<ArgumentException>(() =>
                 timesheet.AddEntry(new TimesheetEntry("John Doe", DateTime.Today, "Project A", "Development", 25)));
         }
+        
+        [Test]
+        public void CreateTimePeriod_ValidHours_Success()
+        {
+            // Arrange & Act
+            var timePeriod = new TimePeriod(8);
 
-    }
+            // Assert
+            Assert.AreEqual(8, timePeriod.HoursWorked);
+        }
+
+        [Test]
+        public void CreateTimePeriod_InvalidHours_ThrowsArgumentException()
+        {
+            // Arrange, Act & Assert
+            Assert.Throws<ArgumentException>(() => new TimePeriod(0));
+            Assert.Throws<ArgumentException>(() => new TimePeriod(25));
+        }
+    } 
 }
