@@ -17,7 +17,7 @@ public class TimeSheet
         
         var totalHoursForDay = _entries
             .Where(e => e.UserName == entry.UserName && e.Date == entry.Date)
-            .Sum(e => e.HoursWorked) + entry.HoursWorked;
+            .Sum(e => e.HoursWorked.HoursWorked) + entry.HoursWorked.HoursWorked;
 
         if (totalHoursForDay > 24)
             throw new InvalidOperationException("Total hours for the day cannot exceed 24.");
@@ -31,6 +31,6 @@ public class TimeSheet
 
         return _entries
             .Where(e => e.UserName == userName && e.Date == date.Date)
-            .Sum(e => e.HoursWorked);
+            .Sum(e => e.HoursWorked.HoursWorked);
     }
 }

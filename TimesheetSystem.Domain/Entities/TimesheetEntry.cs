@@ -1,3 +1,5 @@
+using TimesheetSystem.Domain.ValueObjects;
+
 namespace TimesheetSystem.Domain.Entities;
 
 public class TimesheetEntry
@@ -6,7 +8,7 @@ public class TimesheetEntry
     public DateTime Date { get; }
     public string ProjectName { get; }
     public string Description { get; }
-    public decimal HoursWorked { get; }
+    public TimePeriod HoursWorked { get; }
 
     public TimesheetEntry(string userName, DateTime date, string projectName, string description, decimal hoursWorked)
     {
@@ -17,6 +19,6 @@ public class TimesheetEntry
         Date = date.Date; 
         ProjectName = projectName;
         Description = description;
-        HoursWorked = hoursWorked;
+        HoursWorked = new TimePeriod(hoursWorked);
     }
 }
