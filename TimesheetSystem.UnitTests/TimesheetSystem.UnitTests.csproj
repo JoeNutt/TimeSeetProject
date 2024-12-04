@@ -21,4 +21,11 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\TimesheetSystem.Application\TimesheetSystem.Application.csproj" />
+      <ProjectReference Include="..\TimesheetSystem.Domain\TimesheetSystem.Domain.csproj" />
+      <ProjectReference Include="..\TimesheetSystem.Infrastructure\TimesheetSystem.Infrastructure.csproj" />
+      <ProjectReference Include="..\TimesheetSystem.Presentation\TimesheetSystem.Presentation.csproj" />
+    </ItemGroup>
+
 </Project>
