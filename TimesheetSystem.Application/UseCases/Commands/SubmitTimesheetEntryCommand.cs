@@ -2,7 +2,7 @@ using MediatR;
 
 namespace TimesheetSystem.Application.UseCases.Commands;
 
-public class SubmitTimesheetEntryCommand : IRequest
+public class SubmitTimesheetEntryCommand : IRequest<Unit>
 {
     public string UserName { get; }
     public DateTime Date { get; }

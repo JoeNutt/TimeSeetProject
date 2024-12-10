@@ -2,24 +2,27 @@ using MediatR;
 using TimesheetSystem.Domain.Aggregates;
 using TimesheetSystem.Domain.Entities;
 
-namespace TimesheetSystem.Application.UseCases.Commands.Handlers
+namespace TimesheetSystem.Application.UseCases.Commands.Handlers;
+
+public class SubmitTimesheetEntryCommandHandler : IRequestHandler<SubmitTimesheetEntryCommand, Unit>
 {
-    public class SubmitTimesheetEntryCommandHandler : IRequestHandler<SubmitTimesheetEntryCommand>
+    private readonly TimeSheet _timesheet;
+    private readonly ITimesheetRepository _timesheetRepository;
+
+    public SubmitTimesheetEntryCommandHandler(TimeSheet timesheet, ITimesheetRepository timesheetRepository)
     {
-        private readonly TimeSheet _timesheet;
+        _timesheet = timesheet;
+        _timesheetRepository = timesheetRepository;
+    }
 
-        public SubmitTimesheetEntryCommandHandler(TimeSheet timesheet)
-        {
-            _timesheet = timesheet;
-        }
+    public async Task<Unit> Handle(SubmitTimesheetEntryCommand request, CancellationToken cancellationToken)
+    {
+        var entry = TimesheetEntry.Create(request.UserName, request.Date, request.ProjectName, request.Description,
+            request.HoursWorked);
 
-        public async Task Handle(SubmitTimesheetEntryCommand request, CancellationToken cancellationToken)
-        {
-            // Create a new timesheet entry from the command data
-            var entry = new TimesheetEntry(request.UserName, request.Date, request.ProjectName, request.Description, request.HoursWorked);
+        _timesheet.AddEntry(entry);
+        await _timesheetRepository.AddTimesheetEntryAsync(entry);
 
-            // Add the entry to the timesheet
-            await Task.Run(() => _timesheet.AddEntry(entry), cancellationToken);
-        }
+        return Unit.Value;
     }
 }

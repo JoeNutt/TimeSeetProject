@@ -1,50 +1,55 @@
 using System.Globalization;
-using System.Text;
-using TimesheetSystem.Domain.Aggregates;
+using TimesheetSystem.Domain.Abtractions;
+using TimesheetSystem.Domain.Abtractions.Interfaces;
+using TimesheetSystem.Domain.Entities;
 
-namespace TimesheetSystem.Domain.Services
+namespace TimesheetSystem.Domain.Services;
+
+public class TimesheetService : ITimesheetService
 {
-    public class TimesheetService
+    private IEnumerable<TimesheetEntry> _entries;
+
+    public void SetEntries(IEnumerable<TimesheetEntry> entries)
     {
-        private readonly TimeSheet _timesheet;
+        _entries = entries ?? throw new ArgumentNullException(nameof(entries));
+    }
 
-        public TimesheetService(TimeSheet timesheet)
+    public string ExportToCsv(ICsvBuilder csvBuilder)
+    {
+        var entries = _entries.ToList();
+        if (!entries.Any())
         {
-            _timesheet = timesheet ?? throw new ArgumentNullException(nameof(timesheet));
+            csvBuilder.AddHeader("UserName", "Date", "ProjectName", "Description", "HoursWorked", "DailyTotal");
+            return csvBuilder.Build();
         }
 
-        public string ExportToCsv()
-        {
-            var entries = _timesheet.GetAllEntries();
-
-            if (!entries.Any())
-                return "UserName,Date,ProjectName,Description,HoursWorked,DailyTotal";
-
-            var dailyTotals = entries
-                .GroupBy(e => new { e.UserName, e.Date })
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Sum(e => e.HoursWorked.HoursWorked)
-                );
-
-            var csvBuilder = new StringBuilder();
-            csvBuilder.AppendLine("UserName,Date,ProjectName,Description,HoursWorked,DailyTotal");
-
-            foreach (var entry in entries)
+        var groupedEntries = entries.GroupBy(e => new { e.UserName, e.Date })
+            .Select(g => new
             {
-                var dailyTotal = dailyTotals[new { entry.UserName, entry.Date }];
-                csvBuilder.AppendLine(string.Join(",", new[]
-                {
-                    entry.UserName,
-                    entry.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    entry.ProjectName,
-                    entry.Description,
-                    entry.HoursWorked.HoursWorked.ToString(CultureInfo.InvariantCulture),
-                    dailyTotal.ToString(CultureInfo.InvariantCulture)
-                }));
-            }
+                g.Key.UserName,
+                g.Key.Date,
+                DailyTotal = g.Sum(e => e.HoursWorked.HoursWorked),
+                Entries = g.ToList()
+            });
 
-            return csvBuilder.ToString();
+        csvBuilder.AddHeader("UserName", "Date", "ProjectName", "Description", "HoursWorked", "DailyTotal");
+
+        var rows = groupedEntries.SelectMany(group =>
+            group.Entries.Select(entry => new
+            {
+                group.UserName,
+                Date = group.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                entry.ProjectName,
+                entry.Description,
+                HoursWorked = entry.HoursWorked.HoursWorked.ToString(CultureInfo.InvariantCulture),
+                DailyTotal = group.DailyTotal.ToString(CultureInfo.InvariantCulture)
+            }));
+
+        foreach (var row in rows)
+        {
+            csvBuilder.AddRow(row.UserName, row.Date, row.ProjectName, row.Description, row.HoursWorked, row.DailyTotal);
         }
+
+        return csvBuilder.Build();
     }
 }

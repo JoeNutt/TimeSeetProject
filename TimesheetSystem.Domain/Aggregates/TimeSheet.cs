@@ -1,9 +1,9 @@
-using System.Collections;
+using TimesheetSystem.Domain.Abtractions.Interfaces;
 using TimesheetSystem.Domain.Entities;
 
 namespace TimesheetSystem.Domain.Aggregates;
 
-public class TimeSheet
+public class TimeSheet : ITimeSheet
 {
     private readonly List<TimesheetEntry> _entries;
 

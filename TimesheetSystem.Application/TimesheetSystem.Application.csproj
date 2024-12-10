@@ -7,11 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TimesheetSystem.Domain\TimesheetSystem.Domain.csproj" />
+      <PackageReference Include="MediatR" Version="12.4.1" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR" Version="12.4.1" />
+      <ProjectReference Include="..\TimesheetSystem.Domain\TimesheetSystem.Domain.csproj" />
     </ItemGroup>
 
 </Project>
